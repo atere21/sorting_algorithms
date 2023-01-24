@@ -1,74 +1,74 @@
 #include "sort.h"
 
-void swap_ints(int *a, int *b);
-void max_heapify(int *array, size_t size, size_t base, size_t root);
-void heap_sort(int *array, size_t size);
-
 /**
- * swap_ints - Swap two integers in an array.
- * @a: The first integer to swap.
- * @b: The second integer to swap.
+ * _swap - swaped 2 values.
+ * @array: the array for swap him values.
+ * @i: First index
+ * @j: Second index
+ * @r_size: The size constant for print
+ * Return: Nothing
  */
-void swap_ints(int *a, int *b)
+void _swap(int *array, int i, int j, const int r_size)
 {
 	int tmp;
+	(void) r_size;
 
-	tmp = *a;
-	*a = *b;
-	*b = tmp;
-}
-
-/**
- * max_heapify - Turn a binary tree into a complete binary heap.
- * @array: An array of integers representing a binary tree.
- * @size: The size of the array/tree.
- * @base: The index of the base row of the tree.
- * @root: The root node of the binary tree.
- */
-void max_heapify(int *array, size_t size, size_t base, size_t root)
-{
-	size_t left, right, large;
-
-	left = 2 * root + 1;
-	right = 2 * root + 2;
-	large = root;
-
-	if (left < base && array[left] > array[large])
-		large = left;
-	if (right < base && array[right] > array[large])
-		large = right;
-
-	if (large != root)
+	if (i != j)
 	{
-		swap_ints(array + root, array + large);
-		print_array(array, size);
-		max_heapify(array, size, base, large);
+		tmp = array[i];
+		array[i] = array[j];
+		array[j] = tmp;
+		print_array(array, (size_t)r_size);
 	}
 }
 
 /**
- * heap_sort - Sort an array of integers in ascending
- *             order using the heap sort algorithm.
- * @array: An array of integers.
- * @size: The size of the array.
- *
- * Description: Implements the sift-down heap sort
- * algorithm. Prints the array after each swap.
+ * _largest - Find the largest number btween the layers
+ * @array: The array for sort
+ * @size: The menor element
+ * @i: The largest.
+ * @r_size: The size for print in swap
+ * Return: Nothing.
+ */
+void _largest(int *array, size_t size, int i, const int r_size)
+{
+	int largest = i;
+	int lft = (2 * i) + 1;
+	int rgt = (2 * i) + 2;
+
+	if (lft < (int)size && array[lft] > array[largest])
+		largest = lft;
+
+	if (rgt < (int)size && array[rgt] > array[largest])
+		largest = rgt;
+
+	if (largest != i)
+	{
+		_swap(array, i, largest, r_size);
+		_largest(array, size, largest, r_size);
+	}
+}
+
+/**
+ * heap_sort - Call largest while exist layers
+ * @array: The array that generate the layers
+ * @size: Size of the array
+ * Return: Nothing
  */
 void heap_sort(int *array, size_t size)
 {
+	const int r_size = (const int)size;
 	int i;
 
-	if (array == NULL || size < 2)
+	if (size < 2 || !array)
 		return;
 
-	for (i = (size / 2) - 1; i >= 0; i--)
-		max_heapify(array, size, size, i);
+	for (i = size / 2 - 1; i >= 0; i--)
+		_largest(array, size, i, r_size);
 
-	for (i = size - 1; i > 0; i--)
+	for (i = size - 1; i >= 0; i--)
 	{
-		swap_ints(array, array + i);
-		print_array(array, size);
-		max_heapify(array, size, i, 0);
+		_swap(array, 0, i, r_size);
+		_largest(array, i, 0, r_size);
 	}
 }
